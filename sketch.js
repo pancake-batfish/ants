@@ -1,16 +1,21 @@
-var vehicle;
+var colony;
 
 function setup() {
-  createCanvas(640, 360);
-  vehicle = new Vehicle(320, 180);
+  createCanvas(windowWidth, windowHeight);
+  colony = new Colony();
+
+  for (var i = 0; i < 1; i++) {
+    var ant = new Ant(width/2, height/2);
+    colony.addAnt(ant);
+  }
+  
 }
 
 
 function draw() {
-  background(51);
+  background(255);
+  colony.run();
 
-  vehicle.update();
-  // vehicle.checkEdges();
-  vehicle.display();
+
 
 }
