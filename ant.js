@@ -1,20 +1,33 @@
 var xoff = 0;
 var yoff = 0;
 
-function Ant() {
+function Ant(nest) {
   this.pos = createVector(random(width), random(height));
+
   this.vel = createVector(0, 0);
   this.acc = createVector(0,0);
   this.maxspeed = 1;
   this.maxforce = 0.2;
   this.d = 5;
   this.inc = 0.1;
+  this.nestPos = createVector(nest.pos.x, nest.pos.y);
+  this.nestRadius = nest.d / 2;
+
+  this.prevPos = this.pos.copy();
+  // this.prevPos.x += this.d;
+  // this.prevPos.y += this.d;
+  // this.updatePrev = function() {
+  //   this.prevPos.x = this.pos.x;
+  //   this.prevPos.y = this.pos.y;
+  // }
 
   this.run = function(ants) {
     var wandering = this.wander();
     this.applyForce(wandering);
+    this.nestBoundary();
     this.update();
     this.borders();
+
     this.render();
   };
 
@@ -39,6 +52,7 @@ function Ant() {
     ellipse(0, 0, this.d, this.d);
     ellipse(this.d, 0, this.d, this.d);
     pop();
+    // this.updatePrev();
   };
 
   this.borders = function() {
@@ -64,4 +78,19 @@ function Ant() {
     // steer.limit(this.maxforce);
     return noiseVector;
   };
+
+  this.insideNest = function(position) {
+    return (position.dist(this.nestPos) <= this.nestRadius)
+  }
+
+  this.nestBoundary = function() {
+    //need to store previous position and compare
+    //if new position represents a change from inside to outside
+    //need to revise position or velocity to stay on current side
+    if (this.insideNest(this.prevPos) != this.insideNest(this.pos)) {
+      this.vel.setMag(-1);
+    }
+  }
+
+
 }
