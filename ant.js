@@ -1,14 +1,18 @@
-function Ant(x, y) {
-  this.pos = createVector(x, y);
-  this.vel = createVector(0.8, 0.8);
+var xoff = 0;
+var yoff = 0;
+
+function Ant() {
+  this.pos = createVector(random(width), random(height));
+  this.vel = createVector(0, 0);
   this.acc = createVector(0,0);
   this.maxspeed = 1;
   this.maxforce = 0.2;
   this.d = 5;
-  this.t = 0;
+  this.inc = 0.1;
 
   this.run = function(ants) {
-    //TODO: add function to apply forces
+    var wandering = this.wander();
+    this.applyForce(wandering);
     this.update();
     this.borders();
     this.render();
@@ -19,9 +23,8 @@ function Ant(x, y) {
   };
 
   this.update = function() {
-      // var wandering = this.wander();
-      // this.applyForce(wandering);
       this.vel.add(this.acc);
+      this.vel.limit(this.maxspeed);
       this.pos.add(this.vel);
       this.acc.set(0, 0);
   };
@@ -48,15 +51,17 @@ function Ant(x, y) {
   this.wander = function() {
     //use noise to set a new direction
     //different from but related to current direction
+    var angle = noise(xoff, yoff) * TWO_PI * 4;
+    var noiseVector = p5.Vector.fromAngle(angle);
+    noiseVector.setMag(0.05);
 
-    var x = noise(this.t);
-    var y = noise(this.t);
-    this.t += .01;
-    var noiseVector = createVector(x,y); //will generate with noise
-    var desired = p5.Vector.add(noiseVector, this.pos);
-    desired.setMag(this.maxspeed);
-    var steer = p5.Vector.sub(desired, this.vel);
-    steer.limit(this.maxforce);
-    return steer;
+
+    xoff += this.inc;
+    yoff += this.inc;
+    // var desired = p5.Vector.add(noiseVector, this.pos);
+    // desired.setMag(this.maxspeed);
+    // var steer = p5.Vector.sub(desired, this.vel);
+    // steer.limit(this.maxforce);
+    return noiseVector;
   };
 }
