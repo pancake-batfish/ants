@@ -7,10 +7,18 @@ function setup() {
   colony = new Colony();
   supply = new Supply();
   nest = new Nest(100,height/6, 200, radians(45));
+  
+  //distribution of food
+  for (var i = 0; i < 15; i++) {
+    var food = new Food(random(width), random(height));
+    if (food.pos.dist(nest.pos) > (nest.r)) {
+      supply.addFood(food);
+    }
+  }
 
   //ants anywhere
   for (var i = 0; i < 13; i++) {
-    var ant = new Ant(random(width), random(height), nest);
+    var ant = new Ant(random(width), random(height), nest, supply);
     colony.addAnt(ant);
   }
   //ants inside nest
@@ -25,13 +33,7 @@ function setup() {
       j++;
     }
   }
-  //distribution of food
-  for (var i = 0; i < 15; i++) {
-    var food = new Food(random(width), random(height));
-    if (food.pos.dist(nest.pos) > (nest.r)) {
-      supply.addFood(food);
-    }
-  }
+
 }
 
 
