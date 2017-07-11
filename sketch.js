@@ -10,6 +10,7 @@ function setup() {
     var ant = new Ant(nest);
     colony.addAnt(ant);
   }
+  // frameRate(10);
 }
 
 

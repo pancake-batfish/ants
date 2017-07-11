@@ -16,19 +16,22 @@ function Ant(nest) {
   this.prevPos = this.pos.copy();
   // this.prevPos.x += this.d;
   // this.prevPos.y += this.d;
-  // this.updatePrev = function() {
-  //   this.prevPos.x = this.pos.x;
-  //   this.prevPos.y = this.pos.y;
-  // }
+  this.updatePrev = function() {
+    this.prevPos.x = this.pos.x;
+    this.prevPos.y = this.pos.y;
+  }
 
   this.run = function(ants) {
     var wandering = this.wander();
     this.applyForce(wandering);
-    this.nestBoundary();
+
     this.update();
+    this.nestBoundary();
     this.borders();
 
     this.render();
+    this.updatePrev();
+
   };
 
   this.applyForce = function(force) {
@@ -52,7 +55,6 @@ function Ant(nest) {
     ellipse(0, 0, this.d, this.d);
     ellipse(this.d, 0, this.d, this.d);
     pop();
-    // this.updatePrev();
   };
 
   this.borders = function() {
@@ -80,7 +82,7 @@ function Ant(nest) {
   };
 
   this.insideNest = function(position) {
-    return (position.dist(this.nestPos) <= this.nestRadius)
+    return (position.dist(this.nestPos) < this.nestRadius)
   }
 
   this.nestBoundary = function() {
@@ -88,8 +90,9 @@ function Ant(nest) {
     //if new position represents a change from inside to outside
     //need to revise position or velocity to stay on current side
     if (this.insideNest(this.prevPos) != this.insideNest(this.pos)) {
-      this.vel.setMag(-1);
+      this.vel.mult(-1);
     }
+
   }
 
 
