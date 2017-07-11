@@ -16,13 +16,13 @@ function setup() {
   }
 
   //ants anywhere
-  for (var i = 0; i < 13; i++) {
+  for (var i = 0; i < 1; i++) {
     var ant = new Ant(random(width), random(height), nest, supply);
     colony.addAnt(ant);
   }
   //ants inside nest
   var j = 0;
-  while (j < 7) {
+  while (j < 1) {
     push();
     translate(nest.pos.x, nest.pos.y);
     var ant = new Ant(random(-nest.r, nest.r), random(-nest.r, nest.r), nest, supply);

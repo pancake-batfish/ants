@@ -30,21 +30,32 @@ function Ant(x, y, nest, supply) {
   };
 
   this.coordinate = function() {
-    var target = this.detectFood(this.supply);
-    if (target != null) {
-      var foraging = this.seek(target);
-      this.applyForce(foraging);
-    } else {
+    if (!this.hasFood && !this.insideNest(this.pos)) {
+      var wandering = this.wander();
+      this.applyForce(wandering);
+
+      var target = this.detectFood(this.supply);
+      if (target != null) {
+        var foraging = this.seek(target);
+        this.applyForce(foraging);
+      } else {
+        var wandering = this.wander();
+        this.applyForce(wandering);
+      }
+    } else if (this.hasFood && !this.insideNest(this.pos)) {
+        var returning = this.seek(this.nestPos);
+        this.applyForce(returning);
+    } else if (this.insideNest(this.pos)) {
       var wandering = this.wander();
       this.applyForce(wandering);
     }
 
     this.update();
 
-    if (this.crossingBoundary()) {
-      this.vel.mult(-1);
-      this.update();
-    }
+    // if (this.crossingBoundary()) {
+    //   this.vel.mult(-1);
+    //   this.update();
+    // }
   };
 
   this.applyForce = function(force) {
@@ -101,14 +112,13 @@ function Ant(x, y, nest, supply) {
     return (this.insideNest(this.prevPos) != this.insideNest(this.pos));
   };
 
-  this.detectFood = function(foodArray) {
+  this.detectFood = function(supply) {
     var detectDistance = 10;
     var target = null;
     //iterate through supply
     for (var i = 0; i < supply.length; i++) {
       if (this.pos.dist(supply[i].pos) <= 1) {
         this.hasFood = true;
-        target = this.nestPos;
       } else if (this.pos.dist(supply[i].pos) > 1 && this.pos.dist(supply[i].pos) <= detectDistance && !this.hasFood) {
         target = supply[i].pos;
       }
