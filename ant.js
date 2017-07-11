@@ -30,7 +30,6 @@ function Ant(x, y, nest, supply) {
   };
 
   this.coordinate = function() {
-    //need to handle case where hasFood = true
     var target = this.detectFood(this.supply);
     if (target != null) {
       var foraging = this.seek(target);
@@ -102,18 +101,17 @@ function Ant(x, y, nest, supply) {
     return (this.insideNest(this.prevPos) != this.insideNest(this.pos));
   };
 
-  this.detectFood = function(supply) {
+  this.detectFood = function(foodArray) {
     var detectDistance = 10;
     var target = null;
     //iterate through supply
-    for (var i = 0; i < supply.length(); i++) {
+    for (var i = 0; i < supply.length; i++) {
       if (this.pos.dist(supply[i].pos) <= 1) {
         this.hasFood = true;
         target = this.nestPos;
+      } else if (this.pos.dist(supply[i].pos) > 1 && this.pos.dist(supply[i].pos) <= detectDistance && !this.hasFood) {
+        target = supply[i].pos;
       }
-      // elseif (this.pos.dist(supply[i].pos) > 1 && this.pos.dist(supply[i].pos) <= detectDistance) {
-      //   target = supply[i].pos;
-      // }
     }
     return target;
   };

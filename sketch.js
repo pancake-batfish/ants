@@ -1,18 +1,17 @@
 var colony;
 var nest;
-var supply;
+var supply = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colony = new Colony();
-  supply = new Supply();
   nest = new Nest(100,height/6, 200, radians(45));
-  
+
   //distribution of food
   for (var i = 0; i < 15; i++) {
     var food = new Food(random(width), random(height));
     if (food.pos.dist(nest.pos) > (nest.r)) {
-      supply.addFood(food);
+      supply.push(food);
     }
   }
 
@@ -26,22 +25,24 @@ function setup() {
   while (j < 7) {
     push();
     translate(nest.pos.x, nest.pos.y);
-    var ant = new Ant(random(-nest.r, nest.r), random(-nest.r, nest.r), nest);
+    var ant = new Ant(random(-nest.r, nest.r), random(-nest.r, nest.r), nest, supply);
     pop();
     if (ant.insideNest(ant.pos)) {
       colony.addAnt(ant);
       j++;
     }
   }
-
 }
 
 
 function draw() {
   background(255);
   colony.run();
-  supply.run();
+  // supply.run();
   nest.render();
+  for (var i = 0; i < supply.length; i++) {
+    supply[i].render();
+  }
 
 
 }
