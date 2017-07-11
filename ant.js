@@ -45,7 +45,7 @@ function Ant(x, y, nest, supply) {
     } else if (this.hasFood && !this.insideNest(this.pos)) {
         var returning = this.seek(this.nestPos);
         this.applyForce(returning);
-    } else if (this.insideNest(this.pos)) {
+    } else {
       var wandering = this.wander();
       this.applyForce(wandering);
     }
