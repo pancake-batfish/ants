@@ -1,6 +1,7 @@
 function Nest(x, y, d, theta) {
   this.pos = createVector(x, y);
   this.d = d;
+  this.r = d/2;
   this.theta = theta;
 
   this.render = function() {

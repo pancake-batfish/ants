@@ -1,8 +1,8 @@
 var xoff = 0;
 var yoff = 0;
 
-function Ant(nest) {
-  this.pos = createVector(random(width), random(height));
+function Ant(x, y, nest) {
+  this.pos = createVector(x, y);
 
   this.vel = createVector(0, 0);
   this.acc = createVector(0,0);
@@ -22,17 +22,31 @@ function Ant(nest) {
   }
 
   this.run = function(ants) {
-    var wandering = this.wander();
-    this.applyForce(wandering);
-
-    this.update();
-    this.nestBoundary();
+    this.coordinate();
+    // this.update();
+    // this.nestBoundary();
     this.borders();
 
     this.render();
     this.updatePrev();
 
   };
+
+  this.coordinate = function() {
+    var wandering = this.wander();
+    this.applyForce(wandering);
+    this.update();
+    // while (this.crossingBoundary()) {
+    //   var adjustment = p5.Vector.random2D();
+    //   this.applyForce(adjustment);
+    //   this.update();
+    // }
+    if (this.crossingBoundary()) {
+      this.vel.mult(-1);
+      this.update();
+    }
+
+  }
 
   this.applyForce = function(force) {
     this.acc.add(force);
@@ -82,17 +96,14 @@ function Ant(nest) {
   };
 
   this.insideNest = function(position) {
-    return (position.dist(this.nestPos) < this.nestRadius)
+    return (position.dist(this.nestPos) < (this.nestRadius));
   }
 
-  this.nestBoundary = function() {
+  this.crossingBoundary = function() {
     //need to store previous position and compare
     //if new position represents a change from inside to outside
     //need to revise position or velocity to stay on current side
-    if (this.insideNest(this.prevPos) != this.insideNest(this.pos)) {
-      this.vel.mult(-1);
-    }
-
+    return (this.insideNest(this.prevPos) != this.insideNest(this.pos));
   }
 
 
