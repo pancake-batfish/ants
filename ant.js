@@ -14,8 +14,7 @@ function Ant(x, y, nest) {
   this.nestRadius = nest.d / 2;
 
   this.prevPos = this.pos.copy();
-  // this.prevPos.x += this.d;
-  // this.prevPos.y += this.d;
+
   this.updatePrev = function() {
     this.prevPos.x = this.pos.x;
     this.prevPos.y = this.pos.y;
@@ -23,29 +22,20 @@ function Ant(x, y, nest) {
 
   this.run = function(ants) {
     this.coordinate();
-    // this.update();
-    // this.nestBoundary();
     this.borders();
-
     this.render();
     this.updatePrev();
-
   };
 
   this.coordinate = function() {
     var wandering = this.wander();
     this.applyForce(wandering);
     this.update();
-    // while (this.crossingBoundary()) {
-    //   var adjustment = p5.Vector.random2D();
-    //   this.applyForce(adjustment);
-    //   this.update();
-    // }
+
     if (this.crossingBoundary()) {
       this.vel.mult(-1);
       this.update();
     }
-
   }
 
   this.applyForce = function(force) {
@@ -85,13 +75,9 @@ function Ant(x, y, nest) {
     var noiseVector = p5.Vector.fromAngle(angle);
     noiseVector.setMag(0.05);
 
-
     xoff += this.inc;
     yoff += this.inc;
-    // var desired = p5.Vector.add(noiseVector, this.pos);
-    // desired.setMag(this.maxspeed);
-    // var steer = p5.Vector.sub(desired, this.vel);
-    // steer.limit(this.maxforce);
+
     return noiseVector;
   };
 
@@ -104,6 +90,10 @@ function Ant(x, y, nest) {
     //if new position represents a change from inside to outside
     //need to revise position or velocity to stay on current side
     return (this.insideNest(this.prevPos) != this.insideNest(this.pos));
+  }
+
+  this.detectFood = function(supply) {
+    
   }
 
 

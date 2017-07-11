@@ -1,9 +1,11 @@
 var colony;
 var nest;
+var supply;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colony = new Colony();
+  supply = new Supply();
   nest = new Nest(100,height/6, 200, radians(45));
 
   //ants anywhere
@@ -23,12 +25,21 @@ function setup() {
       j++;
     }
   }
+  //distribution of food
+  for (var i = 0; i < 15; i++) {
+    var food = new Food(random(width), random(height));
+    if (food.pos.dist(nest.pos) > (nest.r)) {
+      supply.addFood(food);
+    }
+  }
 }
 
 
 function draw() {
   background(255);
   colony.run();
+  supply.run();
   nest.render();
+
 
 }
