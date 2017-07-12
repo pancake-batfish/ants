@@ -10,7 +10,7 @@ function Nest(x, y, d, theta) {
     push();
     translate(this.pos.x, this.pos.y);
     rotate(this.theta);
-    arc(0, 0, this.d, this.d, 0, radians(320), OPEN);
+    arc(0, 0, this.d, this.d, 0, radians(315), OPEN);
     pop();
   }
 }

@@ -16,7 +16,7 @@ function setup() {
   }
   //ants anywhere
   for (var i = 0; i < 15; i++) {
-    var ant = new Ant(random(width), random(height), nest, supply);
+    var ant = new Ant(random(width), random(height), nest);
     colony.addAnt(ant);
   }
   //ants inside nest
@@ -24,7 +24,7 @@ function setup() {
   while (j < 7) {
     push();
     translate(nest.pos.x, nest.pos.y);
-    var ant = new Ant(random(-nest.r, nest.r), random(-nest.r, nest.r), nest, supply);
+    var ant = new Ant(random(-nest.r, nest.r), random(-nest.r, nest.r), nest);
     pop();
     if (ant.insideNest(ant.pos)) {
       colony.addAnt(ant);
