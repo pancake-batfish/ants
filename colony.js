@@ -30,4 +30,8 @@ function Colony() {
     nest.render();
   };
 
+  this.getNest = function() {
+    return nest;
+  }
+
 }
