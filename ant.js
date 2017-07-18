@@ -10,9 +10,10 @@ function Ant(x, y, nest) {
   this.maxforce = 0.2;
   this.d = 5;
   this.inc = 0.1;
+  this.nest = nest;
 
-  this.nestPos = createVector(nest.pos.x, nest.pos.y);
-  this.nestRadius = nest.radius;
+  // this.nestPos = createVector(nest.pos.x, nest.pos.y);
+  // this.nestRadius = nest.radius;
 
   this.hasFood = false;
   this.timeGotFood = null;
@@ -31,7 +32,11 @@ function Ant(x, y, nest) {
   };
 
   this.coordinate = function() {
-    if (!this.hasFood && !this.insideNest(this.pos)) {
+    var inNest = this.nest.insideNest(this.pos);
+
+    // if (!this.hasFood && !this.insideNest(this.pos)) {
+    if (!this.hasFood && !inNest) {
+
       var wandering = this.wander();
       this.applyForce(wandering);
 
@@ -43,8 +48,9 @@ function Ant(x, y, nest) {
         var wandering = this.wander();
         this.applyForce(wandering);
       }
-    } else if (this.hasFood && !this.insideNest(this.pos)) {
-        var returning = this.seek(this.nestPos);
+    // } else if (this.hasFood && !this.insideNest(this.pos)) {
+    } else if (this.hasFood && !inNest) {
+        var returning = this.seek(this.nest.position);
         this.applyForce(returning);
     } else {
       var wandering = this.wander();
@@ -80,7 +86,8 @@ function Ant(x, y, nest) {
     ellipse(0, 0, this.d, this.d);
     ellipse(this.d, 0, this.d, this.d);
     if (this.hasFood) {
-      stroke(133, 158, 75);
+      var green = color(133,158,75);
+      stroke(green);
       strokeWeight(4);
       point(this.d/2, 0);
       strokeWeight(1);
@@ -108,15 +115,17 @@ function Ant(x, y, nest) {
     return noiseVector;
   };
 
-  this.insideNest = function(position) {
-    return (position.dist(this.nestPos) < (this.nestRadius));
-  };
+  // this.insideNest = function(position) {
+  //   return (position.dist(this.nestPos) < (this.nestRadius));
+  // };
 
   this.crossingBoundary = function() {
     //need to store previous position and compare
     //if new position represents a change from inside to outside
     //need to revise position or velocity to stay on current side
-    return (this.insideNest(this.prevPos) != this.insideNest(this.pos));
+    // return (this.insideNest(this.prevPos) != this.insideNest(this.pos));
+    return (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos));
+
   };
 
   this.foodExpire = function() {
