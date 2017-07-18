@@ -5,7 +5,10 @@ var supply = [];
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colony = new Colony();
-  nest = new Nest(100,height/6, 200, radians(45));
+  var nestPosition = createVector(100, height/6);
+  var nestDiameter = 200;
+  var nestRotation = 45;
+  nest = new Nest(nestPosition.x, nestPosition.y, nestDiameter, radians(nestRotation));
 
   //distribution of food
   for (var i = 0; i < 15; i++) {
