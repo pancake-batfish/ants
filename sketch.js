@@ -10,7 +10,7 @@ function setup() {
   //distribution of food
   for (var i = 0; i < 15; i++) {
     var food = new Food(random(width), random(height));
-    if (food.pos.dist(nest.pos) > (nest.r)) {
+    if (food.pos.dist(nest.pos) > (nest.radius)) {
       supply.push(food);
     }
   }
@@ -24,7 +24,7 @@ function setup() {
   while (j < 7) {
     push();
     translate(nest.pos.x, nest.pos.y);
-    var ant = new Ant(random(-nest.r, nest.r), random(-nest.r, nest.r), nest);
+    var ant = new Ant(random(-nest.radius, nest.radius), random(-nest.radius, nest.radius), nest);
     pop();
     if (ant.insideNest(ant.pos)) {
       colony.addAnt(ant);
@@ -37,7 +37,6 @@ function setup() {
 function draw() {
   background(255);
   colony.run();
-  // supply.run();
   nest.render();
   for (var i = 0; i < supply.length; i++) {
     supply[i].render();

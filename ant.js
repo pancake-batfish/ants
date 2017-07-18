@@ -12,7 +12,7 @@ function Ant(x, y, nest) {
   this.inc = 0.1;
 
   this.nestPos = createVector(nest.pos.x, nest.pos.y);
-  this.nestRadius = nest.d / 2;
+  this.nestRadius = nest.radius;
 
   this.hasFood = false;
   this.timeGotFood = null;
@@ -123,11 +123,9 @@ function Ant(x, y, nest) {
     var expireTime = 30000;
     if (!this.timeGotFood && this.hasFood) {
       this.timeGotFood = millis();
-      console.log(this.timeGotFood);
     }
 
     if (this.hasFood && this.timeGotFood && millis() > this.timeGotFood + expireTime) {
-      console.log("expired");
       this.hasFood = false;
       this.timeGotFood = null;
     }
