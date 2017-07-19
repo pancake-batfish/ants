@@ -1,5 +1,6 @@
 var xoff = 0;
 var yoff = 0;
+var startTime;
 
 function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
@@ -31,6 +32,7 @@ function Ant(x, y, nest, colony) {
 
   this.coordinate = function() {
     var inNest = this.nest.insideNest(this.pos);
+    var targetAnt = null;
 
     if (!this.hasFood && !inNest) {
       var wandering = this.wander();
@@ -49,13 +51,14 @@ function Ant(x, y, nest, colony) {
         var returning = this.seek(this.nest.position);
         this.applyForce(returning);
     } else if (!this.hasFood && inNest) {
-        var wandering = this.wander();
-        this.applyForce(wandering);
 
         var targetAnt = this.detectAnt(this.colony);
         if (targetAnt != null) {
           var interacting = this.arrive(targetAnt);
           this.applyForce(interacting);
+        } else {
+          var wandering = this.wander();
+          this.applyForce(wandering);
         }
 
     } else {
@@ -153,6 +156,51 @@ function Ant(x, y, nest, colony) {
     }
     return target;
   };
+
+  this.detectAnt = function(ants) {
+    var detectDistance = 10;
+    var target = null;
+    //iterate over array of ants
+    for (var i = 0; i < ants.length; i++) {
+      if (this.pos.dist(ants[i].pos) <= 1) {
+        this.antennaTouch(ants[i]);
+        return target;
+      } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
+        target = ants[i].pos;
+      }
+    }
+    return target;
+  }
+
+  this.antennaTouch = function(targetAnt) {
+    // var timeLimit = 10000;
+    // if (!targetAnt.hasFood) {
+    //   //stop seeking
+    //   //continue wandering
+    // } else if (targetAnt.hasFood && startTime > 0) {
+    //   //start timer
+    // } else if (taretAnt.hasFood && (millis() - startTime > timeLimit) {
+    //   //exitNest
+    //   //stop timer
+    // }
+    console.log("antenna touch!");
+  }
+
+  this.arrive = function(target) {
+    var desired = p5.Vector.sub(target, this.pos);
+    var d = desired.mag();
+
+    if (d < 10) {
+      var m = map(d, 0, 10, 0, this.maxspeed);
+      desired.setMag(m);
+    } else {
+      desired.setMag(this.maxspeed);
+    }
+
+    var steering = p5.Vector.sub(desired, this.vel);
+    steering.limit(this.maxforce);
+    this.applyForce(steering);
+  }
 
   this.seek = function(target) {
     var desired = p5.Vector.sub(target, this.pos);

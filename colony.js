@@ -11,14 +11,14 @@ function Colony() {
 
     // ants anywhere
     for (var i = 0; i < 15; i++) {
-      var ant = new Ant(random(width), random(height), nest, ants);
+      var ant = new Ant(random(width), random(height), nest, this.ants);
       this.ants.push(ant);
     }
 
     //ants in nest
     for (var i = 0; i < 7; i++) {
       var randomLocation = nest.locationInNest();
-      var ant = new Ant(randomLocation.x, randomLocation.y, nest, ants);
+      var ant = new Ant(randomLocation.x, randomLocation.y, nest, this.ants);
       this.ants.push(ant);
     }
   };
