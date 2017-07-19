@@ -1,7 +1,7 @@
 var xoff = 0;
 var yoff = 0;
 
-function Ant(x, y, nest) {
+function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
   this.prevPos = this.pos.copy();
   this.vel = createVector(0, 0);
@@ -11,6 +11,7 @@ function Ant(x, y, nest) {
   this.d = 5;
   this.inc = 0.1;
   this.nest = nest;
+  this.colony = colony;
 
   this.hasFood = false;
   this.timeGotFood = null;
@@ -39,13 +40,24 @@ function Ant(x, y, nest) {
       if (target != null) {
         var foraging = this.seek(target);
         this.applyForce(foraging);
-      } else {
-        var wandering = this.wander();
-        this.applyForce(wandering);
       }
+      // } else {
+      //   var wandering = this.wander();
+      //   this.applyForce(wandering);
+      // }
     } else if (this.hasFood && !inNest) {
         var returning = this.seek(this.nest.position);
         this.applyForce(returning);
+    } else if (!this.hasFood && inNest) {
+        var wandering = this.wander();
+        this.applyForce(wandering);
+
+        var targetAnt = this.detectAnt(this.colony);
+        if (targetAnt != null) {
+          var interacting = this.arrive(targetAnt);
+          this.applyForce(interacting);
+        }
+
     } else {
       var wandering = this.wander();
       this.applyForce(wandering);
