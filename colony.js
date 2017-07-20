@@ -16,7 +16,7 @@ function Colony() {
       this.ants.push(ant);
     }
 
-    // //ants in nest
+    // //ants in nest -- need to set different initial state
     // for (var i = 0; i < 7; i++) {
     //   var randomLocation = nest.locationInNest();
     //   var ant = new Ant(randomLocation.x, randomLocation.y, nest, this.ants);

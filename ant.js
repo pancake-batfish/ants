@@ -1,6 +1,5 @@
 var xoff = 0;
 var yoff = 0;
-// var startTime;
 
 function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
@@ -14,65 +13,79 @@ function Ant(x, y, nest, colony) {
   this.nest = nest;
   this.colony = colony;
   this.target = null;
+  this.targetIndex=null;
 
-  // this.hasFood = true;
+  const ANTSTATE_FORAGING = "foraging";
+  const ANTSTATE_SEEKING_FOOD = "seeking_food";
+  const ANTSTATE_RETURNING = "returning";
+  const ANTSTATE_INTERACTING = "interacting";
+  const ANTSTATE_SEEKING_ANT = "seeking_ant";
+  const ANTSTATE_EXITING = "exiting";
+
+  var state = ANTSTATE_FORAGING;
+
   this.hasFood = false;
-  this.exiting = false;
-  // var foodFactor = random(1);
-  // if (foodFactor > .5) {
-  //   this.hasFood = true;
-  // }
 
-  // this.timeGotFood = null;
-  // this.exiting = false;
 
-  // this.updatePrev = function() {
-  //   this.prevPos.x = this.pos.x;
-  //   this.prevPos.y = this.pos.y;
-  // };
+  this.timeGotFood = null;
+
+  this.updatePrev = function() {
+    this.prevPos.x = this.pos.x;
+    this.prevPos.y = this.pos.y;
+  };
 
   this.run = function(ants) {
     this.coordinate();
     this.borders();
-    // this.foodExpire();
+    this.foodExpire();
     this.render();
-    // this.updatePrev();
+    this.updatePrev();
   };
 
   this.coordinate = function() {
-    var inNest = this.nest.insideNest(this.pos);
-
     var wandering = this.wander();
     this.applyForce(wandering);
 
-    if (!this.hasFood && !inNest) {
-      this.target = this.detectFood(this.supply);
-      if (this.target != null) {
+    if (state == ANTSTATE_FORAGING) {
+        this.target = this.detectFood(this.supply);
+        this.boundaryReverse();
+    } else if (state == ANTSTATE_SEEKING_FOOD) {
         var foraging = this.arrive(this.target);
         this.applyForce(foraging);
-      }
-    } else if (this.hasFood && !inNest) {
+        this.detectArrival();
+        this.boundaryReverse();
+    } else if (state == ANTSTATE_RETURNING) {
         var returning = this.arrive(this.nest.position);
         returning.mult(.1);
         this.applyForce(returning);
-    } else if (!this.exiting && inNest) {
-        this.target = this.detectAnt(this.colony);
-        if (this.target != null) {
-          var interacting = this.arrive(this.target);
-          interacting.mult(.1);
-          this.applyForce(interacting);
+        if (this.crossingBoundary()) {
+          state = ANTSTATE_INTERACTING;
         }
+    } else if (state == ANTSTATE_INTERACTING) {
+        this.target = this.detectAnt(this.colony);
+        this.boundaryReverse();
+    } else if (state == ANTSTATE_SEEKING_ANT)
+        var interacting = this.arrive(this.target);
+        interacting.mult(.1);
+        this.applyForce(interacting);
+        this.antennaTouch();
+        this.boundaryReverse();
+    } else if (state = ANTSTATE_EXITING) {
+      var exiting = this.seek(this.nest.exit);
+      if (this.crossingBoundary()) {
+        state = ANTSTATE_FORAGING;
+      }
     }
-
-
     this.update();
-  //
-  //   // look at "stay within walls" steering behavior
-  //   if (this.crossingBoundary() && !this.hasFood && !this.exiting) {
-  //     this.vel.mult(-1);
-  //     this.update();
-  //   }
   };
+
+  this.boundaryReverse = function() {
+    // look at "stay within walls" steering behavior
+      if (this.crossingBoundary()) {
+        this.vel.mult(-1);
+        // this.update();
+      }
+  }
 
   this.applyForce = function(force) {
     this.acc.add(force);
@@ -113,8 +126,6 @@ function Ant(x, y, nest, colony) {
   };
 
   this.wander = function() {
-    //use noise to set a new direction
-    //different from but related to current direction
     var angle = noise(xoff, yoff) * TWO_PI * 4;
     var noiseVector = p5.Vector.fromAngle(angle);
     noiseVector.setMag(0.1);
@@ -123,42 +134,48 @@ function Ant(x, y, nest, colony) {
     yoff += this.inc;
 
     return noiseVector;
-
     };
 
-  // this.crossingBoundary = function() {
-  //   return (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos));
-  //
-  // };
+  this.crossingBoundary = function() {
+    return (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos));
+  };
 
-  // this.foodExpire = function() {
-  //   var expireTime = 30000;
-  //   if (!this.timeGotFood && this.hasFood) {
-  //     this.timeGotFood = millis();
-  //   }
-  //
-  //   if (this.hasFood && this.timeGotFood && millis() > this.timeGotFood + expireTime) {
-  //     this.hasFood = false;
-  //     this.timeGotFood = null;
-  //   }
-  // }
+  this.foodExpire = function() {
+    var expireTime = 30000;
+    if (!this.timeGotFood && this.hasFood) {
+      this.timeGotFood = millis();
+    }
+
+    if (this.hasFood && this.timeGotFood && millis() > this.timeGotFood + expireTime) {
+      this.hasFood = false;
+      this.timeGotFood = null;
+    }
+  }
 
   this.detectFood = function() {
     var detectDistance = 20;
     var target = null;
     //iterate through supply
     for (var i = 0; i < supply.length; i++) {
-      if (this.pos.dist(supply[i].pos) <= 1) {
-        this.hasFood = true;
-        supply.splice(i, 1);
-        target = this.nest.position;
-      } else if (this.pos.dist(supply[i].pos) > 1 && this.pos.dist(supply[i].pos) <= detectDistance && !this.hasFood) {
+      if (this.pos.dist(supply[i].pos) <= detectDistance) {
+        state = ANTSTATE_SEEKING_FOOD;
         target = supply[i].pos;
       }
     }
     return target;
   };
 
+  this.detectArrival = function() {
+    for (var i = 0; i < supply.length; i++) {
+      if (this.pos.dist(supply[i].pos) <= 1) {
+        this.hasFood = true;
+        supply.splice(i, 1);
+        state = ANTSTATE_RETURNING;
+      }
+    }
+  };
+
+  //TODO: rewrite for new state-based design
   this.detectAnt = function(ants) {
     var detectDistance = 20;
     var nearbyAnt = null;
@@ -177,28 +194,19 @@ function Ant(x, y, nest, colony) {
     return nearbyAnt;
   }
 
-  // this.antennaTouch = function(targetAnt) {
-  //   var timeLimit = 10000;
-  //   if (!targetAnt.hasFood) {
-  //     return null;
-  //   } else {
-  //     // this.exitNest();
-  //     console.log("exiting");
-  //     this.exiting = true;
-  //     return this.nest.exit();
-  //   }
-    // } else if (targetAnt.hasFood && startTime > 0) {
-    //   //start timer
-    // } else if (targetAnt.hasFood && (millis() - startTime > timeLimit) {
-    //   //exitNest
-    //   //stop timer
-    // }
+  //TODO: rewrite for new state-based design
+  // do I need to be clearing this.target?
+  this.antennaTouch = function(targetAnt) {
+    //detect arrival
+    //check timer:
+    // if not running, start - state = interacting
+  }// if running, check:
+      //  if under time limit, state = exiting
+      //  if over time limit, clear timer, state = interacting
 
-  // }
+  }
 
-  // this.exitNest = function() {
-  //   console.log("exit nest!");
-  // }
+
 
   //pursuit -- for moving target -- skate to where the puck will be
   this.arrive = function(target) {
