@@ -17,6 +17,11 @@ function Ant(x, y, nest, colony) {
 
   // this.hasFood = true;
   this.hasFood = false;
+  var foodFactor = random(1);
+  if (foodFactor > .5) {
+    this.hasFood = true;
+  }
+
   // this.timeGotFood = null;
   // this.exiting = false;
 
@@ -58,7 +63,7 @@ function Ant(x, y, nest, colony) {
   //   } else if (!this.hasFood && inNest) {
   //
         this.target = this.detectAnt(this.colony);
-        if (this.target != null) {
+        if (!this.hasFood && this.target != null) {
           var interacting = this.arrive(this.target);
           interacting.mult(.1);
           this.applyForce(interacting);
@@ -168,7 +173,7 @@ function Ant(x, y, nest, colony) {
   // };
 
   this.detectAnt = function(ants) {
-    var detectDistance = 50;
+    var detectDistance = 200;
     var nearbyAnt = null;
     //iterate over array of ants
     for (var i = 0; i < ants.length; i++) {
@@ -222,16 +227,15 @@ function Ant(x, y, nest, colony) {
 
     var steering = p5.Vector.sub(desired, this.vel);
     steering.limit(this.maxforce);
-    // this.applyForce(steering);
     return steering;
   };
 
-  // this.seek = function(target) {
-  //   var desired = p5.Vector.sub(target, this.pos);
-  //   desired.setMag(this.maxspeed);
-  //   var steering = p5.Vector.sub(desired, this.vel);
-  //   steering.limit(this.maxforce);
-  //   return steering;
-  // };
+  this.seek = function(target) {
+    var desired = p5.Vector.sub(target, this.pos);
+    desired.setMag(this.maxspeed);
+    var steering = p5.Vector.sub(desired, this.vel);
+    steering.limit(this.maxforce);
+    return steering;
+  };
 
 }
