@@ -11,24 +11,24 @@ function Colony() {
     nest = new Nest(nestPosition.x, nestPosition.y, nestDiameter, radians(nestRotation));
 
     // ants anywhere
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i < 10; i++) {
       var ant = new Ant(random(width), random(height), nest, this.ants);
       this.ants.push(ant);
     }
 
-    //ants in nest
-    for (var i = 0; i < 7; i++) {
-      var randomLocation = nest.locationInNest();
-      var ant = new Ant(randomLocation.x, randomLocation.y, nest, this.ants);
-      this.ants.push(ant);
-    }
+    // //ants in nest
+    // for (var i = 0; i < 7; i++) {
+    //   var randomLocation = nest.locationInNest();
+    //   var ant = new Ant(randomLocation.x, randomLocation.y, nest, this.ants);
+    //   this.ants.push(ant);
+    // }
   };
 
   this.run = function() {
     for (var i = 0; i < this.ants.length; i++) {
       this.ants[i].run(this.ants);
     }
-    nest.render();
+    // nest.render();
   };
 
   this.getNest = function() {

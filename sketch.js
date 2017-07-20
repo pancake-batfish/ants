@@ -20,7 +20,7 @@ function setup() {
 function draw() {
   background(255);
   colony.run();
-  for (var i = 0; i < supply.length; i++) {
-    supply[i].render();
-  }
+  // for (var i = 0; i < supply.length; i++) {
+  //   supply[i].render();
+  // }
 }
