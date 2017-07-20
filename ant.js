@@ -54,25 +54,16 @@ function Ant(x, y, nest, colony) {
         var returning = this.arrive(this.nest.position);
         returning.mult(.1);
         this.applyForce(returning);
+    } else if (!this.hasFood && inNest) {
+        this.target = this.detectAnt(this.colony);
+        if (!this.hasFood && this.target != null) {
+          var interacting = this.arrive(this.target);
+          interacting.mult(.1);
+          this.applyForce(interacting);
+        }
     }
-  //  else if (!this.hasFood && inNest) {
-  //
-        // this.target = this.detectAnt(this.colony);
-        // if (!this.hasFood && this.target != null) {
-        //   var interacting = this.arrive(this.target);
-        //   interacting.mult(.1);
-        //   this.applyForce(interacting);
-        // } //else {
-        //   console.log("yo! wander!");
-        //   var wandering = this.wander();
-        //   this.applyForce(wandering);
-        // }
-  //
-  //   } else {
-  //     var wandering = this.wander();
-  //     this.applyForce(wandering);
-  //   }
-  //
+
+
     this.update();
   //
   //   // look at "stay within walls" steering behavior
@@ -167,23 +158,23 @@ function Ant(x, y, nest, colony) {
     return target;
   };
 
-  // this.detectAnt = function(ants) {
-  //   var detectDistance = 200;
-  //   var nearbyAnt = null;
-  //   //iterate over array of ants
-  //   for (var i = 0; i < ants.length; i++) {
-  //     // if (this.pos.dist(ants[i].pos) <= 1) {
-  //     //   target = this.antennaTouch(ants[i]);
-  //     //   return target;
-  //     // } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
-  //     //   target = ants[i].pos;
-  //     // }
-  //     if (this.pos.dist(ants[i].pos) <= detectDistance) {
-  //         nearbyAnt = ants[i].pos;
-  //     }
-  //   }
-  //   return nearbyAnt;
-  // }
+  this.detectAnt = function(ants) {
+    var detectDistance = 200;
+    var nearbyAnt = null;
+    //iterate over array of ants
+    for (var i = 0; i < ants.length; i++) {
+      // if (this.pos.dist(ants[i].pos) <= 1) {
+      //   target = this.antennaTouch(ants[i]);
+      //   return target;
+      // } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
+      //   target = ants[i].pos;
+      // }
+      if (this.pos.dist(ants[i].pos) <= detectDistance) {
+          nearbyAnt = ants[i].pos;
+      }
+    }
+    return nearbyAnt;
+  }
 
   // this.antennaTouch = function(targetAnt) {
   //   var timeLimit = 10000;
