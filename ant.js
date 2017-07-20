@@ -17,6 +17,7 @@ function Ant(x, y, nest, colony) {
 
   // this.hasFood = true;
   this.hasFood = false;
+  this.exiting = false;
   // var foodFactor = random(1);
   // if (foodFactor > .5) {
   //   this.hasFood = true;
@@ -54,9 +55,9 @@ function Ant(x, y, nest, colony) {
         var returning = this.arrive(this.nest.position);
         returning.mult(.1);
         this.applyForce(returning);
-    } else if (!this.hasFood && inNest) {
+    } else if (!this.exiting && inNest) {
         this.target = this.detectAnt(this.colony);
-        if (!this.hasFood && this.target != null) {
+        if (this.target != null) {
           var interacting = this.arrive(this.target);
           interacting.mult(.1);
           this.applyForce(interacting);
@@ -159,7 +160,7 @@ function Ant(x, y, nest, colony) {
   };
 
   this.detectAnt = function(ants) {
-    var detectDistance = 200;
+    var detectDistance = 20;
     var nearbyAnt = null;
     //iterate over array of ants
     for (var i = 0; i < ants.length; i++) {
