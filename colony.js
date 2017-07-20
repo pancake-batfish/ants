@@ -28,7 +28,7 @@ function Colony() {
     for (var i = 0; i < this.ants.length; i++) {
       this.ants[i].run(this.ants);
     }
-    // nest.render();
+    nest.render();
   };
 
   this.getNest = function() {

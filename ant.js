@@ -17,10 +17,10 @@ function Ant(x, y, nest, colony) {
 
   // this.hasFood = true;
   this.hasFood = false;
-  var foodFactor = random(1);
-  if (foodFactor > .5) {
-    this.hasFood = true;
-  }
+  // var foodFactor = random(1);
+  // if (foodFactor > .5) {
+  //   this.hasFood = true;
+  // }
 
   // this.timeGotFood = null;
   // this.exiting = false;
@@ -39,35 +39,35 @@ function Ant(x, y, nest, colony) {
   };
 
   this.coordinate = function() {
-  //   var inNest = this.nest.insideNest(this.pos);
+    var inNest = this.nest.insideNest(this.pos);
   //
     // var targetAnt = null;
   //
-  //   if (!this.hasFood && !inNest) {
+    if (!this.hasFood && !inNest) {
       var wandering = this.wander();
       this.applyForce(wandering);
 
-      // var target = createVector(width/2, height/2);
-      // var seeking = this.arrive(target);
-      // seeking.mult(.08);
-      // this.applyForce(seeking);
+      this.target = this.detectFood(this.supply);
+      if (this.target != null) {
+        var foraging = this.arrive(this.target);
+        this.applyForce(foraging);
+      }
+    } else if (this.hasFood && !inNest) {
+        var wandering = this.wander();
+        this.applyForce(wandering);
+
+        var returning = this.arrive(this.nest.position);
+        returning.mult(.1);
+        this.applyForce(returning);
+    }
+  //  else if (!this.hasFood && inNest) {
   //
-  //     var target = this.detectFood(this.supply);
-  //     if (target != null) {
-  //       var foraging = this.seek(target);
-  //       this.applyForce(foraging);
-  //     }
-  //   } else if (this.hasFood && !inNest) {
-  //       var returning = this.seek(this.nest.position);
-  //       this.applyForce(returning);
-  //   } else if (!this.hasFood && inNest) {
-  //
-        this.target = this.detectAnt(this.colony);
-        if (!this.hasFood && this.target != null) {
-          var interacting = this.arrive(this.target);
-          interacting.mult(.1);
-          this.applyForce(interacting);
-        } //else {
+        // this.target = this.detectAnt(this.colony);
+        // if (!this.hasFood && this.target != null) {
+        //   var interacting = this.arrive(this.target);
+        //   interacting.mult(.1);
+        //   this.applyForce(interacting);
+        // } //else {
         //   console.log("yo! wander!");
         //   var wandering = this.wander();
         //   this.applyForce(wandering);
@@ -108,10 +108,10 @@ function Ant(x, y, nest, colony) {
     ellipse(0, 0, this.d, this.d);
     ellipse(this.d, 0, this.d, this.d);
     if (this.hasFood) {
-      var green = color(133,158,75);
+      var green = color(93,186,65);
       var red = color(255,0,0);
-      stroke(red);
-      strokeWeight(4);
+      stroke(green);
+      strokeWeight(5);
       point(this.d/2, 0);
       strokeWeight(1);
     }
@@ -156,39 +156,39 @@ function Ant(x, y, nest, colony) {
   //   }
   // }
 
-  // this.detectFood = function() {
-  //   var detectDistance = 20;
-  //   var target = null;
-  //   //iterate through supply
-  //   for (var i = 0; i < supply.length; i++) {
-  //     if (this.pos.dist(supply[i].pos) <= 1) {
-  //       this.hasFood = true;
-  //       supply.splice(i, 1);
-  //       return target;
-  //     } else if (this.pos.dist(supply[i].pos) > 1 && this.pos.dist(supply[i].pos) <= detectDistance && !this.hasFood) {
-  //       target = supply[i].pos;
-  //     }
-  //   }
-  //   return target;
-  // };
-
-  this.detectAnt = function(ants) {
-    var detectDistance = 200;
-    var nearbyAnt = null;
-    //iterate over array of ants
-    for (var i = 0; i < ants.length; i++) {
-      // if (this.pos.dist(ants[i].pos) <= 1) {
-      //   target = this.antennaTouch(ants[i]);
-      //   return target;
-      // } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
-      //   target = ants[i].pos;
-      // }
-      if (this.pos.dist(ants[i].pos) <= detectDistance) {
-          nearbyAnt = ants[i].pos;
+  this.detectFood = function() {
+    var detectDistance = 20;
+    var target = null;
+    //iterate through supply
+    for (var i = 0; i < supply.length; i++) {
+      if (this.pos.dist(supply[i].pos) <= 1) {
+        this.hasFood = true;
+        supply.splice(i, 1);
+        target = this.nest.position;
+      } else if (this.pos.dist(supply[i].pos) > 1 && this.pos.dist(supply[i].pos) <= detectDistance && !this.hasFood) {
+        target = supply[i].pos;
       }
     }
-    return nearbyAnt;
-  }
+    return target;
+  };
+
+  // this.detectAnt = function(ants) {
+  //   var detectDistance = 200;
+  //   var nearbyAnt = null;
+  //   //iterate over array of ants
+  //   for (var i = 0; i < ants.length; i++) {
+  //     // if (this.pos.dist(ants[i].pos) <= 1) {
+  //     //   target = this.antennaTouch(ants[i]);
+  //     //   return target;
+  //     // } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
+  //     //   target = ants[i].pos;
+  //     // }
+  //     if (this.pos.dist(ants[i].pos) <= detectDistance) {
+  //         nearbyAnt = ants[i].pos;
+  //     }
+  //   }
+  //   return nearbyAnt;
+  // }
 
   // this.antennaTouch = function(targetAnt) {
   //   var timeLimit = 10000;
