@@ -1,6 +1,6 @@
 var xoff = 0;
 var yoff = 0;
-var startTime;
+// var startTime;
 
 function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
@@ -16,6 +16,7 @@ function Ant(x, y, nest, colony) {
 
   this.hasFood = false;
   this.timeGotFood = null;
+  this.exiting = false;
 
   this.updatePrev = function() {
     this.prevPos.x = this.pos.x;
@@ -32,6 +33,7 @@ function Ant(x, y, nest, colony) {
 
   this.coordinate = function() {
     var inNest = this.nest.insideNest(this.pos);
+
     var targetAnt = null;
 
     if (!this.hasFood && !inNest) {
@@ -43,16 +45,12 @@ function Ant(x, y, nest, colony) {
         var foraging = this.seek(target);
         this.applyForce(foraging);
       }
-      // } else {
-      //   var wandering = this.wander();
-      //   this.applyForce(wandering);
-      // }
     } else if (this.hasFood && !inNest) {
         var returning = this.seek(this.nest.position);
         this.applyForce(returning);
     } else if (!this.hasFood && inNest) {
 
-        var targetAnt = this.detectAnt(this.colony);
+        targetAnt = this.detectAnt(this.colony);
         if (targetAnt != null) {
           var interacting = this.arrive(targetAnt);
           this.applyForce(interacting);
@@ -68,7 +66,8 @@ function Ant(x, y, nest, colony) {
 
     this.update();
 
-    if (this.crossingBoundary() && !this.hasFood) {
+    // look at "stay within walls" steering behavior
+    if (this.crossingBoundary() && !this.hasFood && !this.exiting) {
       this.vel.mult(-1);
       this.update();
     }
@@ -96,7 +95,8 @@ function Ant(x, y, nest, colony) {
     ellipse(this.d, 0, this.d, this.d);
     if (this.hasFood) {
       var green = color(133,158,75);
-      stroke(green);
+      var red = color(255,0,0);
+      stroke(red);
       strokeWeight(4);
       point(this.d/2, 0);
       strokeWeight(1);
@@ -163,7 +163,7 @@ function Ant(x, y, nest, colony) {
     //iterate over array of ants
     for (var i = 0; i < ants.length; i++) {
       if (this.pos.dist(ants[i].pos) <= 1) {
-        this.antennaTouch(ants[i]);
+        target = this.antennaTouch(ants[i]);
         return target;
       } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
         target = ants[i].pos;
@@ -173,19 +173,29 @@ function Ant(x, y, nest, colony) {
   }
 
   this.antennaTouch = function(targetAnt) {
-    // var timeLimit = 10000;
-    // if (!targetAnt.hasFood) {
-    //   //stop seeking
-    //   //continue wandering
+    var timeLimit = 10000;
+    if (!targetAnt.hasFood) {
+      return null;
+    } else {
+      // this.exitNest();
+      console.log("exiting");
+      this.exiting = true;
+      return this.nest.exit();
+    }
     // } else if (targetAnt.hasFood && startTime > 0) {
     //   //start timer
-    // } else if (taretAnt.hasFood && (millis() - startTime > timeLimit) {
+    // } else if (targetAnt.hasFood && (millis() - startTime > timeLimit) {
     //   //exitNest
     //   //stop timer
     // }
-    console.log("antenna touch!");
+
   }
 
+  // this.exitNest = function() {
+  //   console.log("exit nest!");
+  // }
+
+  //pursuit -- for moving target -- skate to where the puck will be
   this.arrive = function(target) {
     var desired = p5.Vector.sub(target, this.pos);
     var d = desired.mag();

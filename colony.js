@@ -4,9 +4,10 @@ function Colony() {
 
   this.establish = function() {
     //create nest
-    var nestPosition = createVector(100, height/6);
     var nestDiameter = 200;
     var nestRotation = 45;
+    var nestPosition = createVector(nestDiameter/2 + 50, height/6);
+
     nest = new Nest(nestPosition.x, nestPosition.y, nestDiameter, radians(nestRotation));
 
     // ants anywhere
