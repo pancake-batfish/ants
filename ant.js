@@ -40,22 +40,17 @@ function Ant(x, y, nest, colony) {
 
   this.coordinate = function() {
     var inNest = this.nest.insideNest(this.pos);
-  //
-    // var targetAnt = null;
-  //
-    if (!this.hasFood && !inNest) {
-      var wandering = this.wander();
-      this.applyForce(wandering);
 
+    var wandering = this.wander();
+    this.applyForce(wandering);
+
+    if (!this.hasFood && !inNest) {
       this.target = this.detectFood(this.supply);
       if (this.target != null) {
         var foraging = this.arrive(this.target);
         this.applyForce(foraging);
       }
     } else if (this.hasFood && !inNest) {
-        var wandering = this.wander();
-        this.applyForce(wandering);
-
         var returning = this.arrive(this.nest.position);
         returning.mult(.1);
         this.applyForce(returning);
