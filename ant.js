@@ -5,14 +5,15 @@ var yoff = 0;
 function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
   this.prevPos = this.pos.copy();
-  this.vel = createVector(0, 0);
-  this.acc = createVector(0,0);
+  this.vel = createVector(random(-1,1), random(-1,1));
+  this.acc = createVector(0, 0);
   this.maxspeed = 1;
   this.maxforce = 0.2;
   this.d = 5;
   this.inc = 0.1;
   this.nest = nest;
   this.colony = colony;
+  this.target = null;
 
   // this.hasFood = true;
   this.hasFood = false;
@@ -35,16 +36,16 @@ function Ant(x, y, nest, colony) {
   this.coordinate = function() {
   //   var inNest = this.nest.insideNest(this.pos);
   //
-    var targetAnt = null;
+    // var targetAnt = null;
   //
   //   if (!this.hasFood && !inNest) {
       var wandering = this.wander();
       this.applyForce(wandering);
 
-      var target = createVector(width/2, height/2);
-      var seeking = this.arrive(target);
-      seeking.mult(.08);
-      this.applyForce(seeking);
+      // var target = createVector(width/2, height/2);
+      // var seeking = this.arrive(target);
+      // seeking.mult(.08);
+      // this.applyForce(seeking);
   //
   //     var target = this.detectFood(this.supply);
   //     if (target != null) {
@@ -56,11 +57,12 @@ function Ant(x, y, nest, colony) {
   //       this.applyForce(returning);
   //   } else if (!this.hasFood && inNest) {
   //
-        // targetAnt = this.detectAnt(this.colony);
-        // if (targetAnt != null) {
-        //   var interacting = this.seek(targetAnt);
-        //   this.applyForce(interacting);
-        // } //else {
+        this.target = this.detectAnt(this.colony);
+        if (this.target != null) {
+          var interacting = this.arrive(this.target);
+          interacting.mult(.1);
+          this.applyForce(interacting);
+        } //else {
         //   console.log("yo! wander!");
         //   var wandering = this.wander();
         //   this.applyForce(wandering);
@@ -129,7 +131,8 @@ function Ant(x, y, nest, colony) {
     yoff += this.inc;
 
     return noiseVector;
-  };
+
+    };
 
   // this.crossingBoundary = function() {
   //   return (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos));
@@ -165,8 +168,8 @@ function Ant(x, y, nest, colony) {
   // };
 
   this.detectAnt = function(ants) {
-    var detectDistance = 1;
-    var target = null;
+    var detectDistance = 50;
+    var nearbyAnt = null;
     //iterate over array of ants
     for (var i = 0; i < ants.length; i++) {
       // if (this.pos.dist(ants[i].pos) <= 1) {
@@ -176,22 +179,22 @@ function Ant(x, y, nest, colony) {
       //   target = ants[i].pos;
       // }
       if (this.pos.dist(ants[i].pos) <= detectDistance) {
-          target = ants[i].pos;
+          nearbyAnt = ants[i].pos;
       }
     }
-    return target;
+    return nearbyAnt;
   }
 
-  this.antennaTouch = function(targetAnt) {
-    var timeLimit = 10000;
-    if (!targetAnt.hasFood) {
-      return null;
-    } else {
-      // this.exitNest();
-      console.log("exiting");
-      this.exiting = true;
-      return this.nest.exit();
-    }
+  // this.antennaTouch = function(targetAnt) {
+  //   var timeLimit = 10000;
+  //   if (!targetAnt.hasFood) {
+  //     return null;
+  //   } else {
+  //     // this.exitNest();
+  //     console.log("exiting");
+  //     this.exiting = true;
+  //     return this.nest.exit();
+  //   }
     // } else if (targetAnt.hasFood && startTime > 0) {
     //   //start timer
     // } else if (targetAnt.hasFood && (millis() - startTime > timeLimit) {
@@ -199,7 +202,7 @@ function Ant(x, y, nest, colony) {
     //   //stop timer
     // }
 
-  }
+  // }
 
   // this.exitNest = function() {
   //   console.log("exit nest!");
@@ -221,13 +224,14 @@ function Ant(x, y, nest, colony) {
     steering.limit(this.maxforce);
     // this.applyForce(steering);
     return steering;
-  }
-
-  this.seek = function(target) {
-    var desired = p5.Vector.sub(target, this.pos);
-    desired.setMag(this.maxspeed);
-    var steering = p5.Vector.sub(desired, this.vel);
-    steering.limit(this.maxforce);
-    return steering;
   };
+
+  // this.seek = function(target) {
+  //   var desired = p5.Vector.sub(target, this.pos);
+  //   desired.setMag(this.maxspeed);
+  //   var steering = p5.Vector.sub(desired, this.vel);
+  //   steering.limit(this.maxforce);
+  //   return steering;
+  // };
+
 }
