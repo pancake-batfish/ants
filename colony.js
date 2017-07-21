@@ -11,7 +11,7 @@ function Colony() {
     nest = new Nest(nestPosition.x, nestPosition.y, nestDiameter, radians(nestRotation));
 
     // ants anywhere
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < 1; i++) {
       var ant = new Ant(random(width), random(height), nest, this.ants);
       this.ants.push(ant);
     }
@@ -26,7 +26,7 @@ function Colony() {
 
   this.run = function() {
     for (var i = 0; i < this.ants.length; i++) {
-      this.ants[i].run(this.ants);
+      this.ants[i].run();
     }
     nest.render();
   };
