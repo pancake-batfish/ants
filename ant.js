@@ -13,7 +13,7 @@ function Ant(x, y, nest, colony) {
   this.nest = nest;
   this.colony = colony;
   this.target = null;
-  this.targetIndex=null;
+  this.targetAnt = null;
 
   const ANTSTATE_FORAGING = "foraging";
   const ANTSTATE_SEEKING_FOOD = "seeking_food";
@@ -62,20 +62,24 @@ function Ant(x, y, nest, colony) {
           state = ANTSTATE_INTERACTING;
         }
     } else if (state == ANTSTATE_INTERACTING) {
-        this.target = this.detectAnt(this.colony);
+        this.targetAnt = this.detectAnt(this.colony);
         this.boundaryReverse();
-    } else if (state == ANTSTATE_SEEKING_ANT)
-        var interacting = this.arrive(this.target);
+    } else if (state == ANTSTATE_SEEKING_ANT) {
+        var interacting = this.arrive(this.targetAnt.pos);
         interacting.mult(.1);
         this.applyForce(interacting);
-        this.antennaTouch();
+        this.antennaTouch(this.targetAnt);
         this.boundaryReverse();
     } else if (state = ANTSTATE_EXITING) {
+      console.log("exiting!");
       var exiting = this.seek(this.nest.exit);
       if (this.crossingBoundary()) {
         state = ANTSTATE_FORAGING;
       }
+    } else {
+      state = ANTSTATE_FORAGING;
     }
+
     this.update();
   };
 
@@ -137,6 +141,9 @@ function Ant(x, y, nest, colony) {
     };
 
   this.crossingBoundary = function() {
+    if (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos)) {
+      console.log("crossing boundary!");
+    }
     return (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos));
   };
 
@@ -165,6 +172,7 @@ function Ant(x, y, nest, colony) {
     return target;
   };
 
+//TODO: way of returning ant to foraging if it doesn't get the food
   this.detectArrival = function() {
     for (var i = 0; i < supply.length; i++) {
       if (this.pos.dist(supply[i].pos) <= 1) {
@@ -175,32 +183,35 @@ function Ant(x, y, nest, colony) {
     }
   };
 
-  //TODO: rewrite for new state-based design
   this.detectAnt = function(ants) {
     var detectDistance = 20;
     var nearbyAnt = null;
     //iterate over array of ants
     for (var i = 0; i < ants.length; i++) {
-      // if (this.pos.dist(ants[i].pos) <= 1) {
-      //   target = this.antennaTouch(ants[i]);
-      //   return target;
-      // } else if (this.pos.dist(ants[i].pos) > 1 && this.pos.dist(ants[i].pos) <= detectDistance) {
-      //   target = ants[i].pos;
-      // }
+
+      // if (this.pos.dist(ants[i].pos) <= detectDistance && ants[i].state = ANTSTATE_INTERACTING) {
       if (this.pos.dist(ants[i].pos) <= detectDistance) {
-          nearbyAnt = ants[i].pos;
+          nearbyAnt = ants[i];
+          state = ANTSTATE_SEEKING_ANT;
       }
     }
     return nearbyAnt;
   }
 
   //TODO: rewrite for new state-based design
-  // do I need to be clearing this.target?
+  // do I need to be clearing this.target or this.targetAnt?
   this.antennaTouch = function(targetAnt) {
     //detect arrival
+    if (this.pos.dist(targetAnt.pos) <= 1) {
+      if (targetAnt.hasFood) {
+        state = ANTSTATE_EXITING;
+      } else {
+        state = ANTSTATE_FORAGING;
+      }
+    }
     //check timer:
     // if not running, start - state = interacting
-  }// if running, check:
+  // if running, check:
       //  if under time limit, state = exiting
       //  if over time limit, clear timer, state = interacting
 
