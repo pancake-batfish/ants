@@ -57,7 +57,7 @@ function Ant(x, y, nest, colony) {
         var returning = this.arrive(this.nest.position);
         returning.mult(.1);
         this.applyForce(returning);
-        if (this.crossingBoundary()) {
+        if (this.nest.insideNest(this.pos)) {
           this.state = ANTSTATE_INTERACTING;
         }
     } else if (this.state == ANTSTATE_INTERACTING) {
@@ -72,7 +72,7 @@ function Ant(x, y, nest, colony) {
     } else if (this.state = ANTSTATE_EXITING) {
       console.log("exiting!");
       var exiting = this.seek(this.nest.exit);
-      if (this.crossingBoundary()) {
+      if (!this.nest.insideNest(this.pos)) {
         this.state = ANTSTATE_FORAGING;
       }
     } else {
@@ -201,7 +201,6 @@ function Ant(x, y, nest, colony) {
   }
 
   this.antennaTouch = function(targetAnt) {
-    //need to eliminate self!
     //detect arrival
     if (this.pos.dist(targetAnt.pos) <= 1) {
       if (targetAnt.hasFood) {
