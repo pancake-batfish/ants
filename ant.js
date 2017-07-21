@@ -141,13 +141,6 @@ function Ant(x, y, nest, colony) {
     };
 
   this.crossingBoundary = function() {
-    // console.log(this.nest.insideNest(this.prevPos));
-    // if (this.nest.insideNest(this.prevPos) == this.nest.insideNest(this.pos)) {
-    //   console.log("not crossing boundary!");
-    // } else {
-    //   console.log("crossing the damn boundary!");
-    // }
-    // return (this.nest.insideNest(this.prevPos) != this.nest.insideNest(this.pos));
     return (this.nest.atBoundary(this.pos));
   };
 
@@ -156,7 +149,6 @@ function Ant(x, y, nest, colony) {
     if (!this.timeGotFood && this.hasFood) {
       this.timeGotFood = millis();
     }
-
     if (this.hasFood && this.timeGotFood && millis() > this.timeGotFood + expireTime) {
       this.hasFood = false;
       this.timeGotFood = null;
@@ -204,10 +196,12 @@ function Ant(x, y, nest, colony) {
   this.antennaTouch = function(targetAnt) {
     //detect arrival
     if (this.pos.dist(targetAnt.pos) <= 1) {
+      // if (!this.hasFood && targetAnt.hasFood) {
       if (targetAnt.hasFood) {
+        console.log("change to exit state");
         this.state = ANTSTATE_EXITING;
       } else {
-        this.state = ANTSTATE_FORAGING;
+        this.state = ANTSTATE_INTERACTING;
       }
     }
     //check timer:
