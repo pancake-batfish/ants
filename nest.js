@@ -27,6 +27,11 @@ this.locationInNest = function() {
     return (location.dist(this.position) < this.radius);
   };
 
+  this.atBoundary = function(location) {
+    var margin = 1;
+    return (location.dist(this.position) < this.radius + margin && location.dist(this.position) > this.radius - margin);
+  }
+
   this.exit = function() {
     //this is not exactly right -- won't adapt to different nest rotations
     var x = this.radius * cos(this.rotation/2);
