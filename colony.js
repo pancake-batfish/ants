@@ -11,13 +11,13 @@ function Colony() {
     nest = new Nest(nestPosition.x, nestPosition.y, nestDiameter, radians(nestRotation));
 
     // ants anywhere
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 5; i++) {
       var ant = new Ant(random(width), random(height), nest, this.ants);
       this.ants.push(ant);
     }
 
     // //ants in nest -- need to set different initial state
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 5; i++) {
       var randomLocation = nest.locationInNest();
       var ant = new Ant(randomLocation.x, randomLocation.y, nest, this.ants);
       ant.state = "interacting";

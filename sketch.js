@@ -1,5 +1,8 @@
 var colony;
 var supply = [];
+const DEBUG = "debug";
+const NORMAL = "normal";
+var mode = DEBUG;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);

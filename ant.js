@@ -26,28 +26,24 @@ function Ant(x, y, nest, colony) {
   this.hasFood = false;
   this.timeGotFood = null;
 
-  // this.updatePrev = function() {
-  //   this.prevPos.x = this.pos.x;
-  //   this.prevPos.y = this.pos.y;
-  // };
-
   this.run = function() {
     this.coordinate();
-    // console.log(this.state);
-    // console.log(this.crossingBoundary());
     this.borders();
     this.foodExpire();
     this.render();
-    // this.updatePrev();
   };
 
   this.coordinate = function() {
+    var inNest = this.nest.insideNest(this.pos);
     var wandering = this.wander();
     this.applyForce(wandering);
 
     if (this.state == ANTSTATE_FORAGING) {
         this.target = this.detectFood(this.supply);
         this.boundaryReverse();
+        if (inNest) {
+          this.state = ANTSTATE_INTERACTING;
+        }
     } else if (this.state == ANTSTATE_SEEKING_FOOD) {
         var foraging = this.arrive(this.target);
         this.applyForce(foraging);
@@ -57,12 +53,15 @@ function Ant(x, y, nest, colony) {
         var returning = this.arrive(this.nest.position);
         returning.mult(.1);
         this.applyForce(returning);
-        if (this.nest.insideNest(this.pos)) {
+        if (inNest) {
           this.state = ANTSTATE_INTERACTING;
         }
     } else if (this.state == ANTSTATE_INTERACTING) {
         this.targetAnt = this.detectAnt(this.colony);
         this.boundaryReverse();
+        if (!inNest) {
+          this.state = ANTSTATE_FORAGING;
+        }
     } else if (this.state == ANTSTATE_SEEKING_ANT) {
         var interacting = this.arrive(this.targetAnt.pos);
         interacting.mult(.1);
@@ -70,14 +69,11 @@ function Ant(x, y, nest, colony) {
         this.antennaTouch(this.targetAnt);
         this.boundaryReverse();
     } else if (this.state = ANTSTATE_EXITING) {
-      console.log("exiting!");
       var exiting = this.seek(this.nest.exit());
       this.applyForce(exiting);
-      if (!this.nest.insideNest(this.pos)) {
+      if (!inNest) {
         this.state = ANTSTATE_FORAGING;
       }
-    } else {
-      this.state = ANTSTATE_FORAGING;
     }
 
     this.update();
@@ -102,10 +98,40 @@ function Ant(x, y, nest, colony) {
       this.acc.set(0, 0);
   };
 
+  this.debuggingColor = function() {
+    var black = color(0, 0, 0);
+    var lightBlue = color(14, 143, 186);
+    var lightPurple = color(193, 151, 216);
+    var purple = color(103, 47, 198);
+    var darkGreen = color(12, 89, 44);
+    var lightGreen = color(113, 193, 79);
+    var yellow = color(237, 230, 30);
+
+    if (mode == DEBUG) {
+      switch (this.state) {
+        case ANTSTATE_FORAGING:
+          return lightBlue;
+        case ANTSTATE_SEEKING_FOOD:
+          return lightPurple;
+        case ANTSTATE_RETURNING:
+          return purple;
+        case ANTSTATE_INTERACTING:
+          return darkGreen;
+        case ANTSTATE_SEEKING_ANT:
+          return lightGreen;
+        case ANTSTATE_EXITING:
+          return yellow;
+      }
+    } else {
+      return black;
+    }
+  };
+
   this.render = function() {
+    var antColor = this.debuggingColor();
     var theta = this.vel.heading();
-    fill(0, 150);
-    stroke(0);
+    fill(antColor, 150);
+    stroke(antColor);
     push();
     translate(this.pos.x, this.pos.y);
     rotate(theta);
@@ -113,9 +139,13 @@ function Ant(x, y, nest, colony) {
     ellipse(this.d, 0, this.d, this.d);
     if (this.hasFood) {
       var green = color(93,186,65);
-      var red = color(255,0,0);
-      stroke(green);
-      strokeWeight(5);
+      var red = color(186, 34, 14);
+      stroke(red);
+      if (mode == DEBUG) {
+        strokeWeight(3);
+      } else {
+        strokeWeight(5);
+      }
       point(this.d/2, 0);
       strokeWeight(1);
     }
@@ -195,10 +225,10 @@ function Ant(x, y, nest, colony) {
 
   this.antennaTouch = function(targetAnt) {
     //detect arrival
-    if (this.pos.dist(targetAnt.pos) <= 1) {
+    if (this.pos.dist(targetAnt.pos) <= 3) {
       // if (!this.hasFood && targetAnt.hasFood) {
-      if (targetAnt.hasFood) {
-        console.log("change to exit state");
+      // if (targetAnt.hasFood) {
+      if (!this.hasFood) {
         this.state = ANTSTATE_EXITING;
       } else {
         this.state = ANTSTATE_INTERACTING;

@@ -7,8 +7,8 @@ function Food(x,y) {
 
   this.render = function() {
     var green = color(93,186,65);
-    var red = color(255,0,0);
-    stroke(green);
+    var red = color(186, 34, 14);
+    stroke(red);
     strokeWeight(5);
     point(this.pos.x, this.pos.y);
     strokeWeight(1);
