@@ -3,7 +3,7 @@ var yoff = 0;
 
 function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
-  this.prevPos = this.pos.copy();
+  // this.prevPos = this.pos.copy();
   this.vel = createVector(random(-1,1), random(-1,1));
   this.acc = createVector(0, 0);
   this.maxspeed = 1;

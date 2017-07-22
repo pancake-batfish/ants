@@ -8,7 +8,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   colony = new Colony();
   colony.establish();
-  var foodCount = 20;
+  var foodCount = 10;
   distributeFood(foodCount);
 }
 
@@ -39,9 +39,15 @@ function mousePressed() {
 }
 
 function keyPressed() {
-  if (keyCode == LEFT_ARROW) {
-    mode = DEBUG;
-  } else if (keyCode == RIGHT_ARROW) {
-    mode = NORMAL;
+  if (keyCode == UP_ARROW) {
+    colony.addAnt();
+  } else if (keyCode == DOWN_ARROW) {
+    colony.removeAnt();
+  } else if (keyCode == 32) {
+    distributeFood(10);
+  } else if (keyCode == 68) {
+    mode = DEBUG; //press D for debug
+  } else if (keyCode == 78) {
+    mode = NORMAL; //press N for normal
   }
 }
