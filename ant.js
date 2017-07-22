@@ -99,13 +99,16 @@ function Ant(x, y, nest, colony) {
   };
 
   this.debuggingColor = function() {
-    var black = color(0, 0, 0);
-    var lightBlue = color(14, 143, 186);
-    var lightPurple = color(193, 151, 216);
-    var purple = color(103, 47, 198);
-    var darkGreen = color(12, 89, 44);
-    var lightGreen = color(113, 193, 79);
-    var yellow = color(237, 230, 30);
+    var black = color(0, 0, 0, 150);
+    var lightBlue = color(14, 143, 186, 150);
+    var lightPurple = color(193, 151, 216, 150);
+    var purple = color(103, 47, 198, 150);
+
+    var redOrange = color(239, 82, 9, 150);
+    var orange = color(239,155, 9, 150, 150);
+    // var darkGreen = color(80, 135, 47);
+    // var lightGreen = color(113, 193, 79);
+    var yellow = color(237, 230, 30, 150);
 
     if (mode == DEBUG) {
       switch (this.state) {
@@ -116,9 +119,9 @@ function Ant(x, y, nest, colony) {
         case ANTSTATE_RETURNING:
           return purple;
         case ANTSTATE_INTERACTING:
-          return darkGreen;
+          return redOrange;
         case ANTSTATE_SEEKING_ANT:
-          return lightGreen;
+          return orange;
         case ANTSTATE_EXITING:
           return yellow;
       }
@@ -130,7 +133,7 @@ function Ant(x, y, nest, colony) {
   this.render = function() {
     var antColor = this.debuggingColor();
     var theta = this.vel.heading();
-    fill(antColor, 150);
+    fill(antColor);
     stroke(antColor);
     push();
     translate(this.pos.x, this.pos.y);
@@ -138,14 +141,15 @@ function Ant(x, y, nest, colony) {
     ellipse(0, 0, this.d, this.d);
     ellipse(this.d, 0, this.d, this.d);
     if (this.hasFood) {
+      var lightGreen = color(113, 193, 79);
       var green = color(93,186,65);
       var red = color(186, 34, 14);
-      stroke(red);
-      if (mode == DEBUG) {
-        strokeWeight(3);
-      } else {
+      stroke(lightGreen);
+      // if (mode == DEBUG) {
+      //   strokeWeight(3);
+      // } else {
         strokeWeight(5);
-      }
+      // }
       point(this.d/2, 0);
       strokeWeight(1);
     }

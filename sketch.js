@@ -19,6 +19,17 @@ function setup() {
   }
 }
 
+function keyPressed() {
+  // if (value == "0") {
+  if (keyCode == LEFT_ARROW) {
+    mode = DEBUG;
+  // } else if (value == "1") {
+  } else if (keyCode == RIGHT_ARROW) {
+
+    mode = NORMAL;
+  }
+}
+
 
 function draw() {
   background(255);
