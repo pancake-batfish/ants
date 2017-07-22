@@ -36,7 +36,7 @@ this.locationInNest = function() {
     //this is not exactly right -- won't adapt to different nest rotations
     var x = this.radius * cos(this.rotation/2);
     var y = this.radius * sin(this.rotation/2);
-    var exit = createVector(this.position.x + x, this.position.y + y);
+    var exit = createVector(this.position.x + x + 50, this.position.y + y);
 
     return exit;
   }

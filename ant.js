@@ -142,14 +142,8 @@ function Ant(x, y, nest, colony) {
     ellipse(this.d, 0, this.d, this.d);
     if (this.hasFood) {
       var lightGreen = color(113, 193, 79);
-      var green = color(93,186,65);
-      var red = color(186, 34, 14);
       stroke(lightGreen);
-      // if (mode == DEBUG) {
-      //   strokeWeight(3);
-      // } else {
-        strokeWeight(5);
-      // }
+      strokeWeight(5);
       point(this.d/2, 0);
       strokeWeight(1);
     }
