@@ -54,6 +54,7 @@ function Ant(x, y, nest, colony) {
         this.applyForce(returning);
         if (inNest) {
           this.state = ANTSTATE_INTERACTING;
+          this.foodTimestamp();
         }
     } else if (this.state == ANTSTATE_INTERACTING) {
         this.targetAnt = this.detectAnt(this.colony);
@@ -172,11 +173,14 @@ function Ant(x, y, nest, colony) {
     return (this.nest.atBoundary(this.pos));
   };
 
-  this.foodExpire = function() {
-    var expireTime = 20000;
+  this.foodTimestamp = function() {
     if (!this.timeGotFood && this.hasFood) {
       this.timeGotFood = millis();
     }
+  }
+
+  this.foodExpire = function() {
+    var expireTime = 5000;
     if (this.hasFood && this.timeGotFood && millis() > this.timeGotFood + expireTime) {
       this.hasFood = false;
       this.timeGotFood = null;
@@ -188,8 +192,6 @@ function Ant(x, y, nest, colony) {
     var target = null;
     //iterate through supply
     for (var i = 0; i < supply.length; i++) {
-      //returns last qualifying object in array
-      //better to return first? or closest?
       if (this.pos.dist(supply[i].pos) <= detectDistance && supply[i].available) {
         this.state = ANTSTATE_SEEKING_FOOD;
         target = supply[i];
