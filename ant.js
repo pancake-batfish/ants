@@ -205,18 +205,10 @@ function Ant(x, y, nest, colony) {
         this.target.available = false;
         this.state = ANTSTATE_RETURNING;
       } else {
-        this.target = null;
         this.state = ANTSTATE_FORAGING;
       }
+      this.target = null;
     }
-
-    // for (var i = 0; i < supply.length; i++) {
-    //   if (this.pos.dist(supply[i].pos) <= 1) {
-    //     this.hasFood = true;
-    //     supply.splice(i, 1);
-    //     this.state = ANTSTATE_RETURNING;
-    //   }
-    // }
   };
 
   this.detectAnt = function(ants) {
@@ -224,14 +216,13 @@ function Ant(x, y, nest, colony) {
     var nearbyAnt = null;
 
     for (var i = 0; i < ants.length; i++) {
-      // if (this.pos.dist(ants[i].pos) <= detectDistance && ants[i].state = ANTSTATE_INTERACTING) {
       if (this !== ants[i] && this.pos.dist(ants[i].pos) <= detectDistance) {
           nearbyAnt = ants[i];
           this.state = ANTSTATE_SEEKING_ANT;
       }
     }
     return nearbyAnt;
-  }
+  };
 
   this.antennaTouch = function(targetAnt) {
     //detect arrival
