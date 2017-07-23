@@ -3,7 +3,6 @@ var yoff = 0;
 
 function Ant(x, y, nest, colony) {
   this.pos = createVector(x, y);
-  // this.prevPos = this.pos.copy();
   this.vel = createVector(random(-1,1), random(-1,1));
   this.acc = createVector(0, 0);
   this.maxspeed = 1;
@@ -39,13 +38,13 @@ function Ant(x, y, nest, colony) {
     this.applyForce(wandering);
 
     if (this.state == ANTSTATE_FORAGING) {
-        this.target = this.detectFood(this.supply);
+        this.target = this.detectFood();
         this.boundaryReverse();
         if (inNest) {
           this.state = ANTSTATE_INTERACTING;
         }
     } else if (this.state == ANTSTATE_SEEKING_FOOD) {
-        var foraging = this.arrive(this.target);
+        var foraging = this.seek(this.target.pos);
         this.applyForce(foraging);
         this.detectArrival();
         this.boundaryReverse();
@@ -68,6 +67,9 @@ function Ant(x, y, nest, colony) {
         this.applyForce(interacting);
         this.antennaTouch(this.targetAnt);
         this.boundaryReverse();
+        if (!inNest) {
+          this.state = ANTSTATE_FORAGING;
+        }
     } else if (this.state = ANTSTATE_EXITING) {
       var exiting = this.seek(this.nest.exit());
       this.applyForce(exiting);
@@ -106,8 +108,6 @@ function Ant(x, y, nest, colony) {
 
     var redOrange = color(239, 82, 9, 150);
     var orange = color(239,155, 9, 150, 150);
-    // var darkGreen = color(80, 135, 47);
-    // var lightGreen = color(113, 193, 79);
     var yellow = color(237, 230, 30, 150);
 
     if (mode == DEBUG) {
@@ -166,14 +166,14 @@ function Ant(x, y, nest, colony) {
     yoff += this.inc;
 
     return noiseVector;
-    };
+  };
 
   this.crossingBoundary = function() {
     return (this.nest.atBoundary(this.pos));
   };
 
   this.foodExpire = function() {
-    var expireTime = 30000;
+    var expireTime = 20000;
     if (!this.timeGotFood && this.hasFood) {
       this.timeGotFood = millis();
     }
@@ -188,23 +188,35 @@ function Ant(x, y, nest, colony) {
     var target = null;
     //iterate through supply
     for (var i = 0; i < supply.length; i++) {
-      if (this.pos.dist(supply[i].pos) <= detectDistance) {
+      //returns last qualifying object in array
+      //better to return first? or closest?
+      if (this.pos.dist(supply[i].pos) <= detectDistance && supply[i].available) {
         this.state = ANTSTATE_SEEKING_FOOD;
-        target = supply[i].pos;
+        target = supply[i];
       }
     }
     return target;
   };
 
-//TODO: way of returning ant to foraging if it doesn't get the food
   this.detectArrival = function() {
-    for (var i = 0; i < supply.length; i++) {
-      if (this.pos.dist(supply[i].pos) <= 1) {
+    if (this.pos.dist(this.target.pos) <= 1) {
+      if (this.target.available) {
         this.hasFood = true;
-        supply.splice(i, 1);
+        this.target.available = false;
         this.state = ANTSTATE_RETURNING;
+      } else {
+        this.target = null;
+        this.state = ANTSTATE_FORAGING;
       }
     }
+
+    // for (var i = 0; i < supply.length; i++) {
+    //   if (this.pos.dist(supply[i].pos) <= 1) {
+    //     this.hasFood = true;
+    //     supply.splice(i, 1);
+    //     this.state = ANTSTATE_RETURNING;
+    //   }
+    // }
   };
 
   this.detectAnt = function(ants) {
