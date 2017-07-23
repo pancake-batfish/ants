@@ -24,6 +24,7 @@ function Ant(x, y, nest, colony) {
   this.state = ANTSTATE_FORAGING;
   this.hasFood = false;
   this.timeGotFood = null;
+  this.timeSeekingAnt = null;
 
   this.run = function() {
     this.coordinate();
@@ -57,17 +58,20 @@ function Ant(x, y, nest, colony) {
           this.foodTimestamp();
         }
     } else if (this.state == ANTSTATE_INTERACTING) {
-        this.targetAnt = this.detectAnt(this.colony);
+        if (!this.hasFood) {
+          this.targetAnt = this.detectAnt(this.colony);
+        }
         this.boundaryReverse();
         if (!inNest) {
           this.state = ANTSTATE_FORAGING;
         }
     } else if (this.state == ANTSTATE_SEEKING_ANT) {
-        var interacting = this.arrive(this.targetAnt.pos);
+        var interacting = this.seek(this.targetAnt.pos);
         interacting.mult(.1);
         this.applyForce(interacting);
-        this.antennaTouch(this.targetAnt);
+        this.arriveAnt(this.colony);
         this.boundaryReverse();
+        this.seekingAntExpire();
         if (!inNest) {
           this.state = ANTSTATE_FORAGING;
         }
@@ -180,12 +184,14 @@ function Ant(x, y, nest, colony) {
   }
 
   this.foodExpire = function() {
-    var expireTime = 5000;
+    var expireTime = 10000;
     if (this.hasFood && this.timeGotFood && millis() > this.timeGotFood + expireTime) {
       this.hasFood = false;
       this.timeGotFood = null;
     }
   }
+
+
 
   this.detectFood = function() {
     var detectDistance = 20;
@@ -220,30 +226,50 @@ function Ant(x, y, nest, colony) {
     for (var i = 0; i < ants.length; i++) {
       if (this !== ants[i] && this.pos.dist(ants[i].pos) <= detectDistance) {
           nearbyAnt = ants[i];
+          this.timeSeekingAnt = millis();
           this.state = ANTSTATE_SEEKING_ANT;
       }
     }
     return nearbyAnt;
   };
 
-  this.antennaTouch = function(targetAnt) {
-    //detect arrival
-    if (this.pos.dist(targetAnt.pos) <= 3) {
-      // if (!this.hasFood && targetAnt.hasFood) {
-      // if (targetAnt.hasFood) {
-      if (!this.hasFood) {
-        this.state = ANTSTATE_EXITING;
-      } else {
-        this.state = ANTSTATE_INTERACTING;
+  this.seekingAntExpire = function() {
+    var expireTime = 3000;
+    if (millis() > this.timeSeekingAnt + expireTime) {
+      this.state = ANTSTATE_INTERACTING;
+    }
+  }
+
+  this.arriveAnt = function(ants) {
+    var arriveDistance = 3;
+    for (var i = 0; i < ants.length; i++) {
+      if (this !== ants[i] && this.pos.dist(ants[i].pos) <= arriveDistance) {
+        if (!this.hasFood && ants[i].hasFood) {
+          this.state = ANTSTATE_EXITING;
+        } else {
+          this.state = ANTSTATE_INTERACTING;
+        }
       }
     }
-    //check timer:
-    // if not running, start - state = interacting
-  // if running, check:
-      //  if under time limit, state = exiting
-      //  if over time limit, clear timer, state = interacting
-
-  }
+  };
+  // this.antennaTouch = function(targetAnt) {
+  //   //detect arrival
+  //   if (this.pos.dist(targetAnt.pos) <= 3) {
+  //     // if (!this.hasFood && targetAnt.hasFood) {
+  //     // if (targetAnt.hasFood) {
+  //     if (!this.hasFood) {
+  //       this.state = ANTSTATE_EXITING;
+  //     } else {
+  //       this.state = ANTSTATE_INTERACTING;
+  //     }
+  //   }
+  //   //check timer:
+  //   // if not running, start - state = interacting
+  // // if running, check:
+  //     //  if under time limit, state = exiting
+  //     //  if over time limit, clear timer, state = interacting
+  //
+  // }
 
 
 
