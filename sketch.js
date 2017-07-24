@@ -44,7 +44,7 @@ function keyPressed() {
   } else if (keyCode == DOWN_ARROW) {
     colony.removeAnt();
   } else if (keyCode == 32) {
-    distributeFood(10);
+    distributeFood(10); //spacebar to scatter food
   } else if (keyCode == 68) {
     mode = DEBUG; //press D for debug
   } else if (keyCode == 78) {

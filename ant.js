@@ -87,7 +87,6 @@ function Ant(x, y, nest, colony) {
   };
 
   this.boundaryReverse = function() {
-    // look at "stay within walls" steering behavior
       if (this.crossingBoundary()) {
         this.vel.mult(-1);
         this.update();
@@ -252,28 +251,7 @@ function Ant(x, y, nest, colony) {
       }
     }
   };
-  // this.antennaTouch = function(targetAnt) {
-  //   //detect arrival
-  //   if (this.pos.dist(targetAnt.pos) <= 3) {
-  //     // if (!this.hasFood && targetAnt.hasFood) {
-  //     // if (targetAnt.hasFood) {
-  //     if (!this.hasFood) {
-  //       this.state = ANTSTATE_EXITING;
-  //     } else {
-  //       this.state = ANTSTATE_INTERACTING;
-  //     }
-  //   }
-  //   //check timer:
-  //   // if not running, start - state = interacting
-  // // if running, check:
-  //     //  if under time limit, state = exiting
-  //     //  if over time limit, clear timer, state = interacting
-  //
-  // }
 
-
-
-  //pursuit -- for moving target -- skate to where the puck will be
   this.arrive = function(target) {
     var desired = p5.Vector.sub(target, this.pos);
     var d = desired.mag();
