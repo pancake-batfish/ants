@@ -9,7 +9,7 @@ function Colony() {
 
     nest = new Nest(nestPosition.x, nestPosition.y, nestDiameter, radians(nestRotation));
 
-    var antCount = 2;
+    var antCount = 20;
     for (var i = 0; i < antCount; i++) {
       this.addAnt();
     }

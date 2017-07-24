@@ -8,7 +8,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   colony = new Colony();
   colony.establish();
-  var foodCount = 10;
+  var foodCount = 20;
   distributeFood(foodCount);
 }
 
