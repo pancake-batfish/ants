@@ -25,6 +25,7 @@ function Ant(x, y, nest, colony) {
   this.hasFood = false;
   this.timeGotFood = null;
   this.timeSeekingAnt = null;
+  this.timeCrossed = null;
 
   this.run = function() {
     this.coordinate();
@@ -79,11 +80,24 @@ function Ant(x, y, nest, colony) {
       var exiting = this.seek(this.nest.exit());
       this.applyForce(exiting);
       if (!inNest) {
-        this.state = ANTSTATE_FORAGING;
+        if (!this.timeCrossed) {
+          this.timeCrossed = millis();
+        } else {
+          var timeDelay = 200;
+          if (millis() > this.timeCrossed + timeDelay) {
+            this.state = ANTSTATE_FORAGING;
+            this.timeCrossed = null;
+          }
+        }
+
       }
     }
 
     this.update();
+  };
+
+  this.crossingBoundary = function() {
+    return (this.nest.atBoundary(this.pos));
   };
 
   this.boundaryReverse = function() {
@@ -172,9 +186,7 @@ function Ant(x, y, nest, colony) {
     return noiseVector;
   };
 
-  this.crossingBoundary = function() {
-    return (this.nest.atBoundary(this.pos));
-  };
+
 
   this.foodTimestamp = function() {
     if (!this.timeGotFood && this.hasFood) {
