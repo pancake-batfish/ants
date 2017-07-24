@@ -55,8 +55,7 @@ function Ant(x, y, nest, colony) {
         returning.mult(.1);
         this.applyForce(returning);
         if (inNest) {
-          this.state = ANTSTATE_INTERACTING;
-          this.foodTimestamp();
+          this.stateChangeAtBoundary(ANTSTATE_INTERACTING);
         }
     } else if (this.state == ANTSTATE_INTERACTING) {
         if (!this.hasFood) {
@@ -79,32 +78,32 @@ function Ant(x, y, nest, colony) {
     } else if (this.state = ANTSTATE_EXITING) {
       var exiting = this.seek(this.nest.exit());
       this.applyForce(exiting);
-      if (!inNest) {
-        if (!this.timeCrossed) {
-          this.timeCrossed = millis();
-        } else {
-          var timeDelay = 200;
-          if (millis() > this.timeCrossed + timeDelay) {
-            this.state = ANTSTATE_FORAGING;
-            this.timeCrossed = null;
-          }
-        }
 
+      if (!inNest) {
+        this.stateChangeAtBoundary(ANTSTATE_FORAGING);
       }
     }
-
     this.update();
   };
 
-  this.crossingBoundary = function() {
-    return (this.nest.atBoundary(this.pos));
-  };
-
   this.boundaryReverse = function() {
-      if (this.crossingBoundary()) {
+      if (this.nest.atBoundary(this.pos)) {
         this.vel.mult(-1);
         this.update();
       }
+  };
+
+  this.stateChangeAtBoundary = function(newState) {
+    if (!this.timeCrossed) {
+      this.timeCrossed = millis();
+    } else {
+      var timeDelay = 200;
+      if (millis() > this.timeCrossed + timeDelay) {
+        this.state = newState;
+        this.timeCrossed = null;
+        if (this.hasFood) this.timeGotFood = millis();
+      }
+    }
   }
 
   this.applyForce = function(force) {
@@ -185,14 +184,14 @@ function Ant(x, y, nest, colony) {
 
     return noiseVector;
   };
-
-
-
-  this.foodTimestamp = function() {
-    if (!this.timeGotFood && this.hasFood) {
-      this.timeGotFood = millis();
-    }
-  }
+  //
+  //
+  //
+  // this.foodTimestamp = function() {
+  //   if (!this.timeGotFood && this.hasFood) {
+  //     this.timeGotFood = millis();
+  //   }
+  // }
 
   this.foodExpire = function() {
     var expireTime = 10000;
