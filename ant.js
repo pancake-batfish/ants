@@ -65,6 +65,7 @@ function Ant(x, y, nest, colony) {
         if (!inNest) {
           this.state = ANTSTATE_FORAGING;
         }
+
     } else if (this.state == ANTSTATE_SEEKING_ANT) {
         var interacting = this.seek(this.targetAnt.pos);
         interacting.mult(.1);
@@ -75,6 +76,7 @@ function Ant(x, y, nest, colony) {
         if (!inNest) {
           this.state = ANTSTATE_FORAGING;
         }
+
     } else if (this.state = ANTSTATE_EXITING) {
       var exiting = this.seek(this.nest.exit());
       this.applyForce(exiting);
@@ -184,14 +186,6 @@ function Ant(x, y, nest, colony) {
 
     return noiseVector;
   };
-  //
-  //
-  //
-  // this.foodTimestamp = function() {
-  //   if (!this.timeGotFood && this.hasFood) {
-  //     this.timeGotFood = millis();
-  //   }
-  // }
 
   this.foodExpire = function() {
     var expireTime = 10000;
@@ -200,8 +194,6 @@ function Ant(x, y, nest, colony) {
       this.timeGotFood = null;
     }
   }
-
-
 
   this.detectFood = function() {
     var detectDistance = 20;
@@ -259,6 +251,11 @@ function Ant(x, y, nest, colony) {
         } else {
           this.state = ANTSTATE_INTERACTING;
         }
+      }
+      //small number of random exits
+      var scout = random();
+      if (scout < 0.00001) {
+        this.state = ANTSTATE_EXITING;
       }
     }
   };
