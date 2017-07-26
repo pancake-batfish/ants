@@ -52,3 +52,7 @@ function keyPressed() {
   }
   return false; //prevents browser defaults
 }
+
+function deviceShaken() {
+    mode = DEBUG;
+}
