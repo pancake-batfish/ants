@@ -50,4 +50,5 @@ function keyPressed() {
   } else if (keyCode == 78) {
     mode = NORMAL; //press N for normal
   }
+  return false; //prevents browser defaults
 }
